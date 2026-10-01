@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Adviser {
+  id        Int     @id @default(autoincrement())
+  name      String
+  programId Int
+  Program   Program @relation(fields: [programId], references: [id])
+}
+
+model Program {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Adviser Adviser[]
+  Student Student[]
+  Subject Subject[]
+}
+
+model Remark {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  content   String
+  createdAt DateTime @default(now())
+  category  String   @default("uncategorized")
+  Student   Student  @relation(fields: [studentId], references: [id])
+}
+
+model Student {
+  id        Int      @id @default(autoincrement())
+  name      String
+  programId Int
+  Remark    Remark[]
+  Program   Program  @relation(fields: [programId], references: [id])
+}
+
+model Subject {
+  id          Int     @id @default(autoincrement())
+  description String
+  programId   Int
+  Program     Program @relation(fields: [programId], references: [id])
+}
