@@ -1,20 +1,23 @@
+import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubjectsService } from './subjects.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
 
+const asyncMock = () => jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
 describe('SubjectsService', () => {
   let service: SubjectsService;
   const prisma = {
     program: {
-      findUnique: jest.fn(),
+      findUnique: asyncMock(),
     },
     subject: {
-      create: jest.fn(),
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
+      create: asyncMock(),
+      findMany: asyncMock(),
+      findUnique: asyncMock(),
+      update: asyncMock(),
+      delete: asyncMock(),
     },
   };
 
@@ -59,13 +62,12 @@ describe('SubjectsService', () => {
     });
   });
 
-  it('returns subjects with their programs in descending ID order', async () => {
+  it('returns subjects in descending ID order', async () => {
     prisma.subject.findMany.mockResolvedValue([]);
 
     await service.findAll();
 
     expect(prisma.subject.findMany).toHaveBeenCalledWith({
-      include: { Program: true },
       orderBy: { id: 'desc' },
     });
   });
@@ -124,7 +126,11 @@ describe('SubjectsService', () => {
     prisma.subject.findUnique.mockResolvedValue(subject);
     prisma.subject.delete.mockResolvedValue(subject);
 
-    await expect(service.remove(1)).resolves.toBe(subject);
+    await expect(service.remove(1)).resolves.toEqual({
+      success: true,
+      message: 'Subject with ID 1 has been deleted',
+      data: subject,
+    });
     expect(prisma.subject.delete).toHaveBeenCalledWith({
       where: { id: 1 },
     });

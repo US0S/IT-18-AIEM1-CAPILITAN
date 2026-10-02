@@ -56,7 +56,15 @@ export class RemarksService {
     if (!remark) {
       throw new NotFoundException(`Remark with ID ${id} not found`);
     }
-    return this.prisma.remark.delete({ where: { id } });
+    const deletedRemark = await this.prisma.remark.delete({ where: { id } });
+    if (!deletedRemark) {
+      throw new NotFoundException(`Remark with ID ${id} was not found`);
+    }
+    return {
+      success: true,
+      message: `Remark with ID ${id} has been deleted`,
+      data: deletedRemark,
+    };
   }
 //////////////////////////////////  stucentId
 

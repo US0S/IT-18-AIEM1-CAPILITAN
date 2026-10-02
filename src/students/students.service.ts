@@ -49,7 +49,15 @@ export class StudentsService {
     if (!student) {
       throw new NotFoundException(`Student with ID ${id} not found`);
     }
-    return this.prisma.student.delete({ where: { id: Number(id) } });
+    const deletedStudent = await this.prisma.student.delete({ where: { id: Number(id) } });
+    if (!deletedStudent) {
+      throw new NotFoundException(`Student with ID ${id} was not found`);
+    }
+    return {
+      success: true,
+      message: `Student with ID ${id} has been deleted`,
+      data: deletedStudent,
+    };
   }
 //////////////////////////////////  stucentId
 
@@ -201,15 +209,36 @@ export class StudentsService {
    
   async deleteStudentProgram(programId: number) {
     await this.searchProgramExists(programId);
-    return this.prisma.student.delete({
+    const deletedStudent = await this.prisma.student.delete({
       where: { id: Number(programId) },
     });
+    if (!deletedStudent) {
+      throw new NotFoundException(`Student with ID ${programId} was not found`);
+    }
+
+    return {
+      success: true,
+      message: `Student with ID ${programId} has been deleted`,
+      data: deletedStudent,
+    };  
   }  
 
   async deleteStudentAndProgram(studentId: number, programId: number) {
     await this.searchProgramExists(programId);
-    return this.prisma.student.deleteMany({
+    const deletedStudent = await this.prisma.student.deleteMany({
       where: { id: Number(programId), studentId: Number(studentId) },
+      
     });
+    if (!deletedStudent) {
+      throw new NotFoundException(
+        `Student with ID ${studentId} was not found for program with ID ${programId}`,
+      );
+    }
+
+    return {
+      success: true,
+      message: `Student with ID ${studentId} has been deleted for program with ID ${programId}`,
+      data: deletedStudent,
+    };
   }
 }

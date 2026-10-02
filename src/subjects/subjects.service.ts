@@ -71,9 +71,17 @@ export class SubjectsService {
   async remove(id: number) {
     await this.findOne(id);
 
-    return this.prisma.subject.delete({
+    const deletedSubject = await this.prisma.subject.delete({
       where: { id },
     });
+    if (!deletedSubject) {
+      throw new NotFoundException(`Subject with ID ${id} was not found`);
+    }
+    return {
+      success: true,
+      message: `Subject with ID ${id} has been deleted`,
+      data: deletedSubject,
+    };
   }
   /////////////////////////////
 
@@ -165,9 +173,17 @@ export class SubjectsService {
     if (!subject) {
       throw new NotFoundException(`Subject with ID ${id} was not found`);
     }
-    return this.prisma.subject.delete({
+    const deletedSubject = await this.prisma.subject.delete({
       where: { id },
     });
+    if (!deletedSubject) {
+      throw new NotFoundException(`Subject with ID ${id} was not found`);
+    }
+    return {
+      success: true,
+      message: `Subject with ID ${id} has been deleted`,
+      data: deletedSubject,
+    };
   }   
 
   async deleteSubjectAndProgram(subjectId: number, programId: number) { 
@@ -178,9 +194,17 @@ export class SubjectsService {
     if (!subject) {
       throw new NotFoundException(`Subject with ID ${subjectId} was not found for program with ID ${programId}`);
     }
-    return this.prisma.subject.delete({
+    const deletedSubject = await this.prisma.subject.delete({
       where: { id: subject.id },
     });
+    if (!deletedSubject) {
+      throw new NotFoundException(`Subject with ID ${subjectId} was not found for program with ID ${programId}`);
+    }
+    return {
+      success: true,
+      message: `Subject with ID ${subjectId} has been deleted for program with ID ${programId}`,
+      data: deletedSubject,
+    };
   }  
 
 

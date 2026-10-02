@@ -1,17 +1,20 @@
+import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProgramsService } from './programs.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
 
+const asyncMock = () => jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
 describe('ProgramsService', () => {
   let service: ProgramsService;
   const prisma = {
     program: {
-      create: jest.fn(),
-      findMany: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
+      create: asyncMock(),
+      findMany: asyncMock(),
+      findUnique: asyncMock(),
+      update: asyncMock(),
+      delete: asyncMock(),
     },
   };
 
@@ -78,12 +81,16 @@ describe('ProgramsService', () => {
     });
   });
 
-  it('deletes an existing program', async () => {
+  it('deletes an existing program and returns a success message', async () => {
     const program = { id: 1, name: 'Computer Science' };
     prisma.program.findUnique.mockResolvedValue(program);
     prisma.program.delete.mockResolvedValue(program);
 
-    await expect(service.remove(1)).resolves.toBe(program);
+    await expect(service.remove(1)).resolves.toEqual({
+      success: true,
+      message: 'Program with ID 1 has been deleted',
+      data: program,
+    });
     expect(prisma.program.delete).toHaveBeenCalledWith({
       where: { id: 1 },
     });
