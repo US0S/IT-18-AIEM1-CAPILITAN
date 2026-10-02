@@ -206,20 +206,4 @@ export class SubjectsService {
       data: deletedSubject,
     };
   }  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }  

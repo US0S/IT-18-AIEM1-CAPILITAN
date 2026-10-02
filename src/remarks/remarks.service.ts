@@ -216,15 +216,25 @@ export class RemarksService {
    
   async deleteRemarkStudent(id: number) {
     await this.searchStudentExists(id);
-    return this.prisma.remark.delete({
+    const deletedRemark = await this.prisma.remark.delete({
       where: { id },
     });
+    return {
+      success: true,
+      message: `Remark with ID ${id} has been deleted`,
+      data: deletedRemark,
+    };
   }
 
   async deleteStudentAndRemark(studentId: number, remarkId: number) {
     await this.searchStudentExists(studentId);
-    return this.prisma.remark.deleteMany({
+    const deletedRemark = await this.prisma.remark.deleteMany({
       where: { id: remarkId, studentId },
     });
+    return {
+      success: true,
+      message: `Remark with ID ${remarkId} has been deleted for student with ID ${studentId}`,
+      data: deletedRemark,
+    };
   }
 }

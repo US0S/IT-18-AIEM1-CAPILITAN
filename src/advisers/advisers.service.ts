@@ -226,12 +226,4 @@ async deleteAdviserAndProgram(adviserId: number, programId: number) {
     data: deletedAdviser,
   };
 }    
-
-
-
-
-
-
-
-
 }  
